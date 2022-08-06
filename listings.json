@@ -2,7 +2,10 @@
   {
     "listing": "/index.html",
     "items": [
-      "/posts/pdf-of-the-lua-manual/index.html"
+      "/posts/santas-little-lua-scripts/index.html",
+      "/posts/pdf-of-the-lua-manual/index.html",
+      "/posts/extending-pandoc-with-lua/index.html",
+      "/posts/rt6_redirect/index.html"
     ]
   }
 ]

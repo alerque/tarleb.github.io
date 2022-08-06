@@ -1,15 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
+    <loc>tarleb.com/posts/extending-pandoc-with-lua/index.html</loc>
+    <lastmod>2022-08-06T13:15:14.232Z</lastmod>
+  </url>
+  <url>
     <loc>tarleb.com/posts/pdf-of-the-lua-manual/index.html</loc>
-    <lastmod>2022-08-06T12:55:09.489Z</lastmod>
+    <lastmod>2022-08-06T13:15:15.092Z</lastmod>
+  </url>
+  <url>
+    <loc>tarleb.com/posts/santas-little-lua-scripts/index.html</loc>
+    <lastmod>2022-08-06T13:15:15.576Z</lastmod>
+  </url>
+  <url>
+    <loc>tarleb.com/posts/rt6_redirect/index.html</loc>
+    <lastmod>2022-08-06T13:15:15.988Z</lastmod>
   </url>
   <url>
     <loc>tarleb.com/about.html</loc>
-    <lastmod>2022-08-06T12:55:10.153Z</lastmod>
+    <lastmod>2022-08-06T13:15:16.304Z</lastmod>
   </url>
   <url>
     <loc>tarleb.com/index.html</loc>
-    <lastmod>2022-08-06T12:55:10.501Z</lastmod>
+    <lastmod>2022-08-06T13:15:16.696Z</lastmod>
   </url>
 </urlset>
