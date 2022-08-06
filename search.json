@@ -1,0 +1,16 @@
+[
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "tarleb’s site",
+    "section": "",
+    "text": "This is an empty website."
+  },
+  {
+    "objectID": "about.html",
+    "href": "about.html",
+    "title": "About",
+    "section": "",
+    "text": "About this Site\nThe page is build using Quarto. To learn more about Quarto websites visit https://quarto.org/docs/websites."
+  }
+]
