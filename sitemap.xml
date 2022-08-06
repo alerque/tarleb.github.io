@@ -2,30 +2,34 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>tarleb.com/posts/extending-pandoc-with-lua/index.html</loc>
-    <lastmod>2022-08-06T13:24:54.399Z</lastmod>
+    <lastmod>2022-08-06T13:35:27.123Z</lastmod>
   </url>
   <url>
     <loc>tarleb.com/posts/pdf-of-the-lua-manual/index.html</loc>
-    <lastmod>2022-08-06T13:24:56.335Z</lastmod>
+    <lastmod>2022-08-06T13:35:27.867Z</lastmod>
   </url>
   <url>
     <loc>tarleb.com/posts/santas-little-lua-scripts/index.html</loc>
-    <lastmod>2022-08-06T13:24:56.767Z</lastmod>
+    <lastmod>2022-08-06T13:35:28.283Z</lastmod>
+  </url>
+  <url>
+    <loc>tarleb.com/posts/nook-2014/index.html</loc>
+    <lastmod>2022-08-06T13:35:28.592Z</lastmod>
   </url>
   <url>
     <loc>tarleb.com/posts/rt6_redirect/index.html</loc>
-    <lastmod>2022-08-06T13:24:57.107Z</lastmod>
+    <lastmod>2022-08-06T13:35:28.920Z</lastmod>
   </url>
   <url>
     <loc>tarleb.com/posts/howto-zsh-vi-style/index.html</loc>
-    <lastmod>2022-08-06T13:24:57.707Z</lastmod>
+    <lastmod>2022-08-06T13:35:29.492Z</lastmod>
   </url>
   <url>
     <loc>tarleb.com/about.html</loc>
-    <lastmod>2022-08-06T13:24:57.999Z</lastmod>
+    <lastmod>2022-08-06T13:35:29.748Z</lastmod>
   </url>
   <url>
     <loc>tarleb.com/index.html</loc>
-    <lastmod>2022-08-06T13:24:58.363Z</lastmod>
+    <lastmod>2022-08-06T13:35:30.108Z</lastmod>
   </url>
 </urlset>
