@@ -175,6 +175,41 @@
     "text": "Alternative Solution\nCompletely disabling redirects in the kernel should keep you reasonably secure. However, if you need redirects within your internal network, you could also block redirect packages reaching you through external interfaces. E.g., to block redirect packages coming in on eth1, one would issue\nsudo ip6tables -A -i eth1 -p icmpv6 --icmpv6-type 137 -j DROP\nHowever, firewall configuration is a complex topic, so I’m not going to go into details here.\nIf you have any questions, corrections or comments on the matter, please drop me a line."
   },
   {
+    "objectID": "posts/howto-zsh-vi-style/index.html",
+    "href": "posts/howto-zsh-vi-style/index.html",
+    "title": "How to configure zsh with vi bindings and nice shortcuts",
+    "section": "",
+    "text": "Having a good working environment is vital for feeling comfortable being productive. This extends to computational tools and the command shell is an integral part of the daily work for many of us. It’s a good idea to configure the shell’s interface to be efficient and pleasant to use. Here we see how zsh, arguably the best shell around, can be configured to suit the needs of people used to vi key bindings (which are arguably arguably superior and more ergonomical than the default emacs-style bindings)1."
+  },
+  {
+    "objectID": "posts/howto-zsh-vi-style/index.html#using-vi-bindings-in-the-shell",
+    "href": "posts/howto-zsh-vi-style/index.html#using-vi-bindings-in-the-shell",
+    "title": "How to configure zsh with vi bindings and nice shortcuts",
+    "section": "Using vi-bindings in the shell",
+    "text": "Using vi-bindings in the shell\nThe first step towards nice vi key bindings is almost too easy: The red pill takes the form of\nbindkey -v\nType it into your prompt (and add it to your .zshrc file) and emacs bindings are going bye-bye. Escape will bring you to normal-mode, while i, a, o etc. will bring you back to insert-mode, just as with your favorite editor. Use j and k in normal-mode to go through your history and move around within the line with h, l, w, b and the like.\nThis is a good start, let’s see how we can bring it from “this is nice” to “that’s just awesome”.\nFirst, we may want to keep some of the default key bindings in insert-mode since we’ve grown accustomed to them. No missing out, let’s put them back in:\n# Kill input from the current point to the end of line with Ctrl-k\nbindkey '^k' kill-line\n# Search the history incremantally with Ctrl-r\nbindkey '^r' history-incremental-search-backward\n# Insert and go through the \"last words\" of previous commands with Meta-.\n# (or Escape-. for that matter).\nbindkey '^[.' insert-last-word\n# Show the man-page or other helpful infos with Meta-h\nbindkey '^[h' run-help\nYou can take a look at the key bindings defined for emacs-mode by typing bindkey -M emacs -L and reuse the bindings you like. See the zshzle manpage for more pre-defined widgets for which you could define bindings."
+  },
+  {
+    "objectID": "posts/howto-zsh-vi-style/index.html#configuring-the-prompt-to-show-the-current-editing-mode",
+    "href": "posts/howto-zsh-vi-style/index.html#configuring-the-prompt-to-show-the-current-editing-mode",
+    "title": "How to configure zsh with vi bindings and nice shortcuts",
+    "section": "Configuring the prompt to show the current editing mode",
+    "text": "Configuring the prompt to show the current editing mode\nSo the key bindings are quite usable now, but it’s a bit unfortunate that it is impossible to see if the shell is in insert- or normal-mode. There should be a mode indicator right in the shell prompt!\n# You may already have those in your .zshrc somewhere\nautoload -U promptinit && promptinit\nautoload -U colors     && colors\n\nsetopt prompt_subst\n\n# Set the colors to your liking\nlocal vi_normal_marker=\"[%{$fg[green]%}%BN%b%{$reset_color%}]\"\nlocal vi_insert_marker=\"[%{$fg[cyan]%}%BI%b%{$reset_color%}]\"\nlocal vi_unknown_marker=\"[%{$fg[red]%}%BU%b%{$reset_color%}]\"\nlocal vi_mode=\"$vi_insert_marker\"\nvi_mode_indicator () {\n  case ${KEYMAP} in\n    (vicmd)      echo $vi_normal_marker ;;\n    (main|viins) echo $vi_insert_marker ;;\n    (*)          echo $vi_unknown_marker ;;\n  esac\n}\n\n# Reset mode-marker and prompt whenever the keymap changes\nfunction zle-line-init zle-keymap-select {\n  vi_mode=\"$(vi_mode_indicator)\"\n  zle reset-prompt\n}\nzle -N zle-line-init\nzle -N zle-keymap-select\n\n# Multiline-prompts don't quite work with reset-prompt; we work around this by\n# printing the first line(s) via a precmd which is executed before the prompt\n# is printed.  The following can be integrated into PROMPT for single-line\n# prompts.\n#\n# Colorize freely\nlocal user_host='%B%n%b@%m'\nlocal current_dir='%~'\nprecmd () print -rP \"${user_host} ${current_dir}\"\n\nlocal return_code=\"%(?..%{$fg[red]%}%? %{$reset_color%})\"\nPROMPT='${return_code}${vi_mode} %# '\nThis gives a prompt in the style of\nuser@host /current/working/path\n[I] %\nwhere [I] is the insert-mode indicator and is changed to [N] when normal-mode is activated. Neat, isn’t it?"
+  },
+  {
+    "objectID": "posts/howto-zsh-vi-style/index.html#single--and-multi-key-shortcuts",
+    "href": "posts/howto-zsh-vi-style/index.html#single--and-multi-key-shortcuts",
+    "title": "How to configure zsh with vi bindings and nice shortcuts",
+    "section": "Single- and multi-key shortcuts",
+    "text": "Single- and multi-key shortcuts\nThis is all nice and dandy, but it’s not quite like vim yet. How about those sweet bindings where pressing jj in quick succession brings us to normal-mode without having to press Esc? Setting it up is easy as pie.\n# Time in which two keys have to be pressed in order to be recognized as a\n# single command (in centiseconds, set to 0.4 sec by default -- may be\n# modified as needed).\nexport KEYTIMEOUT=40\nbindkey 'jj' vi-cmd-mode\nWe can also add two-key bindings to jump to the start and end of the line:\n# Bind to both possible orders in which the keys could be pressed.\n# Move all the way to the left\nbindkey ';l' end-of-line\nbindkey 'l;' end-of-line\n# Move all the way to the right\nbindkey ';h' beginning-of-line\nbindkey 'h;' beginning-of-line\nJumping to the beginning of the line is now as easy as pressing ; and h at the same time. No need to switch to normal-mode and your fingers don’t leave the your keyboard’s home-row. Try it, it’s great!"
+  },
+  {
+    "objectID": "posts/howto-zsh-vi-style/index.html#more",
+    "href": "posts/howto-zsh-vi-style/index.html#more",
+    "title": "How to configure zsh with vi bindings and nice shortcuts",
+    "section": "More",
+    "text": "More\nCustomizations like this can make it much more pleasant to use the command line and boost your productivity. If the above is still not enough, here are some more ideas:\n\nDefine custom keymaps, e.g. to control other programs such as mpc or tmux.\nSwitch to said keymaps via some nice bindings.\nShow the status of version control systems and build environments in the prompt.\n\nIf you don’t feel like doing all the work yourself, I can heartly reommend you take a look at oh-my-zsh. It offers a great collection of ideas to build on and some really cool ready-to-use plugins. Have fun!"
+  },
+  {
     "objectID": "about.html",
     "href": "about.html",
     "title": "About",
@@ -186,6 +221,6 @@
     "href": "index.html",
     "title": "tarleb’s site",
     "section": "",
-    "text": "Santa’s Little Lua Scripts\n\n\n\n\n\n\n\nlua\n\n\nhslua\n\n\nexample\n\n\n\n\n\n\n\n\n\n\n\nDec 6, 2020\n\n\nAlbert Krewinkel\n\n\n\n\n\n\n  \n\n\n\n\nPDF Version of the Lua Manual\n\n\n\n\n\n\n\npandoc\n\n\nlua\n\n\npdf\n\n\n\n\nUsing pandoc and some filters to render the Lua manual as PDF.\n\n\n\n\n\n\nJul 11, 2020\n\n\nAlbert Krewinkel\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nExtending pandoc with Lua\n\n\n\n\n\n\n\npandoc\n\n\nlua\n\n\npandoc-filter\n\n\n\n\n\n\n\n\n\n\n\nDec 23, 2017\n\n\nAlbert Krewinkel\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nrt6_redirect: source isn’t a valid nexthop for redirect target\n\n\n\n\n\n\n\nsecurity\n\n\nipv6\n\n\nserver\n\n\n\n\n\n\n\n\n\n\n\nAug 1, 2014\n\n\nAlbert Krewinkel\n\n\n\n\n\n\nNo matching items"
+    "text": "Santa’s Little Lua Scripts\n\n\n\n\n\n\n\nlua\n\n\nhslua\n\n\nexample\n\n\n\n\n\n\n\n\n\n\n\nDec 6, 2020\n\n\nAlbert Krewinkel\n\n\n\n\n\n\n  \n\n\n\n\nPDF Version of the Lua Manual\n\n\n\n\n\n\n\npandoc\n\n\nlua\n\n\npdf\n\n\n\n\nUsing pandoc and some filters to render the Lua manual as PDF.\n\n\n\n\n\n\nJul 11, 2020\n\n\nAlbert Krewinkel\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nExtending pandoc with Lua\n\n\n\n\n\n\n\npandoc\n\n\nlua\n\n\npandoc-filter\n\n\n\n\n\n\n\n\n\n\n\nDec 23, 2017\n\n\nAlbert Krewinkel\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nrt6_redirect: source isn’t a valid nexthop for redirect target\n\n\n\n\n\n\n\nsecurity\n\n\nipv6\n\n\nserver\n\n\n\n\n\n\n\n\n\n\n\nAug 1, 2014\n\n\nAlbert Krewinkel\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nHow to configure zsh with vi bindings and nice shortcuts\n\n\n\n\n\n\n\nzsh\n\n\nvi\n\n\nkey bindings\n\n\n\n\n\n\n\n\n\n\n\nJun 29, 2014\n\n\nAlbert Krewinkel\n\n\n\n\n\n\nNo matching items"
   }
 ]
