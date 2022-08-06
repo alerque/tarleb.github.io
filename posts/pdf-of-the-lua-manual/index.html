@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.0.38">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Albert Krewinkel">
+<meta name="dcterms.date" content="2020-07-11">
+<meta name="description" content="Using pandoc and some filters to render the Lua manual as PDF.">
+
+<title>tarleb.com - PDF Version of the Lua Manual</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<script src="../../site_libs/quarto-html/quarto.js"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit"
+  }
+}</script>
+
+
+<link rel="stylesheet" href="../../styles.css">
+</head>
+
+<body class="nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-dark ">
+      <div class="navbar-container container-fluid">
+      <a class="navbar-brand" href="../../index.html">
+    <span class="navbar-title">tarleb.com</span>
+  </a>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../../index.html">Home</a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../about.html">About</a>
+  </li>  
+</ul>
+              <div id="quarto-search" class="" title="Search"></div>
+          </div> <!-- /navcollapse -->
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#invoking-pandoc" id="toc-invoking-pandoc" class="nav-link active" data-scroll-target="#invoking-pandoc">Invoking pandoc</a></li>
+  <li><a href="#replacing-characters" id="toc-replacing-characters" class="nav-link" data-scroll-target="#replacing-characters">Replacing characters</a></li>
+  <li><a href="#add-table-of-contents" id="toc-add-table-of-contents" class="nav-link" data-scroll-target="#add-table-of-contents">Add Table of Contents</a></li>
+  <li><a href="#improve-title-and-metadata" id="toc-improve-title-and-metadata" class="nav-link" data-scroll-target="#improve-title-and-metadata">Improve title and metadata</a></li>
+  <li><a href="#final-touch" id="toc-final-touch" class="nav-link" data-scroll-target="#final-touch">Final touch</a></li>
+  <li><a href="#summary" id="toc-summary" class="nav-link" data-scroll-target="#summary">Summary</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">PDF Version of the Lua Manual</h1>
+  <div class="quarto-categories">
+    <div class="quarto-category">pandoc</div>
+    <div class="quarto-category">lua</div>
+    <div class="quarto-category">pdf</div>
+  </div>
+  </div>
+
+<div>
+  <div class="description">
+    <p>Using pandoc and some filters to render the Lua manual as PDF.</p>
+  </div>
+</div>
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Albert Krewinkel </p>
+          </div>
+  </div>
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">July 11, 2020</p>
+    </div>
+  </div>
+    
+  </div>
+  
+
+</header>
+
+<p>A question came up on the Lua mailing list, asking whether there was a PDF version of the <a href="https://lua.org/manual/5.4/manual.html">Lua manual</a>. This is, of course, the home domain of pandoc, and I got nerd-sniped into producing a PDF (and ePUB) version of the manual.</p>
+<p>This is a good opportunity to showcase some pandoc features. The post describes the process of going from an HTML web page to a PDF file via LaTeX and pandoc. We will see how to</p>
+<ol type="1">
+<li>quickly convert documents with pandoc;</li>
+<li>use Lua filters to improve the result by modifying the document; and</li>
+<li>fine-tune the output by setting appropriate pandoc options.</li>
+</ol>
+<section id="invoking-pandoc" class="level2">
+<h2 class="anchored" data-anchor-id="invoking-pandoc">Invoking pandoc</h2>
+<p>The first step is to call pandoc on the Lua manual website. Even when keeping everything bare-bones, the result is already decent:</p>
+<pre><code>pandoc --pdf-engine=xelatex --output=lua-manual.pdf \
+    "https://lua.org/manual/5.4/manual.html"</code></pre>
+<p>Produces</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="../../img/lua-refman-naive.png" class="img-fluid figure-img"></p>
+<p></p><figcaption class="figure-caption">First page of unoptimized PDF</figcaption><p></p>
+</figure>
+</div>
+<p>This requires a somewhat recent version of pandoc as well as XeLaTeX to be installed. It is possible to forgo the trouble of installing the requirements by using the <em>pandoc/latex</em> Docker image:</p>
+<pre><code>docker run --rm -v "$PWD":/data -u $(id -u):$(id -g) pandoc/latex:2.9.2.1 \
+    --pdf-engine=xelatex --output=lua-manual.pdf \
+    "https://lua.org/manual/5.4/manual.html"</code></pre>
+</section>
+<section id="replacing-characters" class="level2">
+<h2 class="anchored" data-anchor-id="replacing-characters">Replacing characters</h2>
+<p>The above commands will produce warnings about characters which are unavailable in the default fonts. We don’t want characters to go missing, of course, so let’s fix that first. The warnings are:</p>
+<pre><code>[WARNING] Missing character: There is no ≤ (U+2264) in font [lmmono10-regular]:!
+[WARNING] Missing character: There is no ≤ (U+2264) in font [lmmono10-regular]:!
+[WARNING] Missing character: There is no π (U+03C0) in font [lmroman10-italic]:mapping=tex-text;!</code></pre>
+<p>Searching the page for <code>≤</code> shows that it is used in inline code, while <code>π</code> occurs as emphasized character in the description of <code>math.pi</code>. We could, of course, search for a font which has the appropriate glyphs and instruct pandoc/LaTeX to use it. But we’ll go a different route.</p>
+<p>A good way to improve the result of a converstion is to use a pandoc <a href="https://pandoc.org/lua-filters.html">Lua filter</a>. We create a file called <code>beautify-manual.lua</code> and pass it to pandoc via the <code>--lua-filter=beautify-manual.lua</code> command line option.</p>
+<p>Handling <code>≤</code> is straight forward, we just replace the char with the slightly uglier looking ASCII sequence <code>&lt;=</code> in all code elements.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode lua code-with-copy"><code class="sourceCode lua"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="kw">function</span> Code <span class="op">(</span>c<span class="op">)</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  c<span class="op">.</span>text <span class="op">=</span> c<span class="op">.</span>text<span class="op">:</span><span class="fu">gsub</span><span class="op">(</span><span class="st">'≤'</span><span class="op">,</span> <span class="st">'&lt;='</span><span class="op">)</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> c</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="kw">end</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>While there is no italics version <code>π</code> in the default font, there <em>is</em> such a glyph in the default math font. Pandoc’s internal representation for <em>π</em> is <code>Emph [Str "π"]</code>, which we replace with a math element holding the same content.</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode lua code-with-copy"><code class="sourceCode lua"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="kw">function</span> Emph <span class="op">(</span>e<span class="op">)</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  <span class="kw">local</span> s <span class="op">=</span> e<span class="op">.</span>content<span class="op">[</span><span class="dv">1</span><span class="op">]</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> <span class="op">#</span>e<span class="op">.</span>content <span class="op">==</span> <span class="dv">1</span> <span class="kw">and</span> s<span class="op">.</span>tag <span class="op">==</span> <span class="st">'Str'</span> <span class="kw">and</span> s<span class="op">.</span>text <span class="op">==</span> <span class="st">'π'</span> <span class="cf">then</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> pandoc<span class="op">.</span>Math<span class="op">(</span><span class="st">'InlineMath'</span><span class="op">,</span> <span class="st">'π'</span><span class="op">)</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>  <span class="cf">end</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="kw">end</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>The document now compiles without warnings, and all characters are properly included.</p>
+</section>
+<section id="add-table-of-contents" class="level2">
+<h2 class="anchored" data-anchor-id="add-table-of-contents">Add Table of Contents</h2>
+<p>The Lua manual is long, often used as a reference, and, in its HTML version, comes with a table of contents on a separate page. The PDF, for it to be useful as a reference, should have a table of contents as well. Pandoc can be told to generate a table of contents by adding the <code>--toc</code> command line flag. The toc depth is controlled via <code>--toc-depth</code>; <code>2</code> is a good setting here. However, in this case, the result is neither pleasing nor informative:</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="../../img/bad-toc.png" class="img-fluid figure-img"></p>
+<p></p><figcaption class="figure-caption">Bad looking table of contents</figcaption><p></p>
+</figure>
+</div>
+<p>Something is terribly wrong. By inspecting the parsed document by running <code>pandoc --to=native …</code>, we see that all <em>Header</em>s contain a <em>Span</em>. That span holds the actual contents. Apparently LaTeX does not like this and omits the content of the span when generating the toc.</p>
+<p>The span also has the id used by links to the header. Numbered sections start with the section number, which we’d rather produce via pandoc.</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode lua code-with-copy"><code class="sourceCode lua"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="kw">function</span> Header <span class="op">(</span>h<span class="op">)</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  <span class="co">-- Unnumbered sections have the main contents as the first element.</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  <span class="co">-- Numbered sections start with the number and an em-dash, so</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>  <span class="co">-- the Span is the fifth element (Lua multipass).</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>  <span class="kw">local</span> span</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> h<span class="op">.</span>content<span class="op">[</span><span class="dv">1</span><span class="op">].</span>tag <span class="op">==</span> <span class="st">'Str'</span> <span class="kw">and</span> h<span class="op">.</span>content<span class="op">[</span><span class="dv">1</span><span class="op">].</span>text<span class="op">:</span><span class="fu">match</span> <span class="st">'[%d%.]+'</span> <span class="cf">then</span></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>    span <span class="op">=</span> h<span class="op">.</span>content<span class="op">[</span><span class="dv">5</span><span class="op">]</span></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>  <span class="cf">else</span></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>    span <span class="op">=</span> h<span class="op">.</span>content<span class="op">[</span><span class="dv">1</span><span class="op">]</span></span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>    h<span class="op">.</span>classes<span class="op">:</span><span class="fu">insert</span><span class="op">(</span><span class="st">'unnumbered'</span><span class="op">)</span></span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>  <span class="cf">end</span></span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>  h<span class="op">.</span>identifier <span class="op">=</span> span<span class="op">.</span>identifier</span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>  h<span class="op">.</span>content <span class="op">=</span> span<span class="op">.</span>content</span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> h</span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a><span class="kw">end</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>The filter also removes the section numbering. We add it back by passing <code>--number-sections</code> to pandoc.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="../../img/less-bad-toc.png" class="img-fluid figure-img"></p>
+<p></p><figcaption class="figure-caption">less-bad table of contents</figcaption><p></p>
+</figure>
+</div>
+<p>Not bad.</p>
+</section>
+<section id="improve-title-and-metadata" class="level2">
+<h2 class="anchored" data-anchor-id="improve-title-and-metadata">Improve title and metadata</h2>
+<p>The PDF is already quite usable, let’s prettify it a bit more: It would be important to properly list the authors in the title and metadata, remove the unnecessary first header, and maybe add the Lua logo to the title. All this is easiest when acting on the full document.</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode lua code-with-copy"><code class="sourceCode lua"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="kw">function</span> Pandoc <span class="op">(</span>doc<span class="op">)</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  <span class="co">-- comma separated authors</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>  <span class="kw">local</span> authors <span class="op">=</span> doc<span class="op">.</span>blocks<span class="op">[</span><span class="dv">2</span><span class="op">]</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>  authors<span class="op">.</span>content<span class="op">:</span><span class="fu">remove</span><span class="op">(</span><span class="dv">1</span><span class="op">)</span>  <span class="co">-- remove 'by'</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>  doc<span class="op">.</span>meta<span class="op">.</span>author <span class="op">=</span> pandoc<span class="op">.</span>List<span class="op">()</span></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> author <span class="kw">in</span> pandoc<span class="op">.</span>utils<span class="op">.</span>stringify<span class="op">(</span>authors<span class="op">):</span><span class="fu">gmatch</span> <span class="st">'[^,]+'</span> <span class="cf">do</span></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>    doc<span class="op">.</span>meta<span class="op">.</span>author<span class="op">:</span><span class="fu">insert</span><span class="op">(</span>author<span class="op">)</span></span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>  <span class="cf">end</span></span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>  <span class="co">-- Remove unnecessary blocks</span></span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>  doc<span class="op">.</span>blocks<span class="op">:</span><span class="fu">remove</span><span class="op">(</span><span class="dv">4</span><span class="op">)</span> <span class="co">-- menubar</span></span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>  doc<span class="op">.</span>blocks<span class="op">:</span><span class="fu">remove</span><span class="op">(</span><span class="dv">2</span><span class="op">)</span> <span class="co">-- authors paragraph</span></span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>  doc<span class="op">.</span>blocks<span class="op">:</span><span class="fu">remove</span><span class="op">(</span><span class="dv">1</span><span class="op">)</span> <span class="co">-- title header</span></span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>  <span class="co">-- add subtitle image</span></span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>  doc<span class="op">.</span>meta<span class="op">.</span>subtitle <span class="op">=</span> pandoc<span class="op">.</span>MetaInlines<span class="op">{</span></span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>    pandoc<span class="op">.</span>RawInline<span class="op">(</span><span class="st">'latex'</span><span class="op">,</span> <span class="st">'</span><span class="sc">\\</span><span class="st">vspace{1em}'</span><span class="op">),</span></span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a>    pandoc<span class="op">.</span>Image<span class="op">(</span><span class="st">"Lua logo"</span><span class="op">,</span> <span class="co">-- "https://www.lua.org/images/lua-logo.gif")</span></span>
+<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a>  <span class="op">}</span></span>
+<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> doc</span>
+<span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a><span class="kw">end</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="final-touch" class="level2">
+<h2 class="anchored" data-anchor-id="final-touch">Final touch</h2>
+<p>Finally, we may want the PDF to add a little more visible structure, e.g., starting top-level sections on their own page.</p>
+<p>The command used by pandoc to create the top level headings can be controlled with the <code>--top-level-division</code> option. Setting that option to <code>chapter</code> ensures that each major section starts on a new page. However, the default document class used by LaTeX doesn’t allow chapters, so a different class has to be set with <code>--variable documentclass=report</code>.</p>
+</section>
+<section id="summary" class="level2">
+<h2 class="anchored" data-anchor-id="summary">Summary</h2>
+<p>For completeness, here is the full pandoc command used to generate the PDF:</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="ex">pandoc</span> <span class="dt">\</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">--toc</span> <span class="dt">\</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">--toc-depth</span><span class="op">=</span>2 <span class="dt">\</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">--metadata</span><span class="op">=</span>documentclass=report <span class="dt">\</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">--pdf-engine</span><span class="op">=</span>xelatex <span class="dt">\</span></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">--lua-filter</span><span class="op">=</span>lua-manual-cleanup.lua <span class="dt">\</span></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">--number-sections</span> <span class="dt">\</span></span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">--top-level-division</span><span class="op">=</span>chapter <span class="dt">\</span></span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">--output</span><span class="op">=</span>lua-5.4-manual.pdf <span class="dt">\</span></span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>  <span class="st">"https://lua.org/manual/5.4/manual.html"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>One of the big advantages of pandoc is that it offers a lot of freedom. Since we already cleaned the content up, we can now also create other formats, like an ebook, just by changing the name of the output file. The final results are available below:</p>
+<ul>
+<li><a href="../../docs/lua-5.4-manual.pdf">Lua 5.4 manual (PDF)</a></li>
+<li><a href="../../docs/lua-5.4-manual.epub">Lua 5.4 manual (EPUB)</a></li>
+</ul>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    setTimeout(function() {
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      let href = ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const cites = ref.parentNode.getAttribute('data-cites').split(' ');
+    tippyHover(ref, function() {
+      var popup = window.document.createElement('div');
+      cites.forEach(function(cite) {
+        var citeDiv = window.document.createElement('div');
+        citeDiv.classList.add('hanging-indent');
+        citeDiv.classList.add('csl-entry');
+        var biblioDiv = window.document.getElementById('ref-' + cite);
+        if (biblioDiv) {
+          citeDiv.innerHTML = biblioDiv.innerHTML;
+        }
+        popup.appendChild(citeDiv);
+      });
+      return popup.innerHTML;
+    });
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>

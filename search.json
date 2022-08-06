@@ -1,10 +1,52 @@
 [
   {
-    "objectID": "index.html",
-    "href": "index.html",
-    "title": "tarleb’s site",
+    "objectID": "posts/pdf-of-the-lua-manual/index.html",
+    "href": "posts/pdf-of-the-lua-manual/index.html",
+    "title": "PDF Version of the Lua Manual",
     "section": "",
-    "text": "This is an empty website."
+    "text": "A question came up on the Lua mailing list, asking whether there was a PDF version of the Lua manual. This is, of course, the home domain of pandoc, and I got nerd-sniped into producing a PDF (and ePUB) version of the manual.\nThis is a good opportunity to showcase some pandoc features. The post describes the process of going from an HTML web page to a PDF file via LaTeX and pandoc. We will see how to"
+  },
+  {
+    "objectID": "posts/pdf-of-the-lua-manual/index.html#invoking-pandoc",
+    "href": "posts/pdf-of-the-lua-manual/index.html#invoking-pandoc",
+    "title": "PDF Version of the Lua Manual",
+    "section": "Invoking pandoc",
+    "text": "Invoking pandoc\nThe first step is to call pandoc on the Lua manual website. Even when keeping everything bare-bones, the result is already decent:\npandoc --pdf-engine=xelatex --output=lua-manual.pdf \\\n    \"https://lua.org/manual/5.4/manual.html\"\nProduces\n\n\n\nFirst page of unoptimized PDF\n\n\nThis requires a somewhat recent version of pandoc as well as XeLaTeX to be installed. It is possible to forgo the trouble of installing the requirements by using the pandoc/latex Docker image:\ndocker run --rm -v \"$PWD\":/data -u $(id -u):$(id -g) pandoc/latex:2.9.2.1 \\\n    --pdf-engine=xelatex --output=lua-manual.pdf \\\n    \"https://lua.org/manual/5.4/manual.html\""
+  },
+  {
+    "objectID": "posts/pdf-of-the-lua-manual/index.html#replacing-characters",
+    "href": "posts/pdf-of-the-lua-manual/index.html#replacing-characters",
+    "title": "PDF Version of the Lua Manual",
+    "section": "Replacing characters",
+    "text": "Replacing characters\nThe above commands will produce warnings about characters which are unavailable in the default fonts. We don’t want characters to go missing, of course, so let’s fix that first. The warnings are:\n[WARNING] Missing character: There is no ≤ (U+2264) in font [lmmono10-regular]:!\n[WARNING] Missing character: There is no ≤ (U+2264) in font [lmmono10-regular]:!\n[WARNING] Missing character: There is no π (U+03C0) in font [lmroman10-italic]:mapping=tex-text;!\nSearching the page for ≤ shows that it is used in inline code, while π occurs as emphasized character in the description of math.pi. We could, of course, search for a font which has the appropriate glyphs and instruct pandoc/LaTeX to use it. But we’ll go a different route.\nA good way to improve the result of a converstion is to use a pandoc Lua filter. We create a file called beautify-manual.lua and pass it to pandoc via the --lua-filter=beautify-manual.lua command line option.\nHandling ≤ is straight forward, we just replace the char with the slightly uglier looking ASCII sequence <= in all code elements.\nfunction Code (c)\n  c.text = c.text:gsub('≤', '<=')\n  return c\nend\nWhile there is no italics version π in the default font, there is such a glyph in the default math font. Pandoc’s internal representation for π is Emph [Str \"π\"], which we replace with a math element holding the same content.\nfunction Emph (e)\n  local s = e.content[1]\n  if #e.content == 1 and s.tag == 'Str' and s.text == 'π' then\n    return pandoc.Math('InlineMath', 'π')\n  end\nend\nThe document now compiles without warnings, and all characters are properly included."
+  },
+  {
+    "objectID": "posts/pdf-of-the-lua-manual/index.html#add-table-of-contents",
+    "href": "posts/pdf-of-the-lua-manual/index.html#add-table-of-contents",
+    "title": "PDF Version of the Lua Manual",
+    "section": "Add Table of Contents",
+    "text": "Add Table of Contents\nThe Lua manual is long, often used as a reference, and, in its HTML version, comes with a table of contents on a separate page. The PDF, for it to be useful as a reference, should have a table of contents as well. Pandoc can be told to generate a table of contents by adding the --toc command line flag. The toc depth is controlled via --toc-depth; 2 is a good setting here. However, in this case, the result is neither pleasing nor informative:\n\n\n\nBad looking table of contents\n\n\nSomething is terribly wrong. By inspecting the parsed document by running pandoc --to=native …, we see that all Headers contain a Span. That span holds the actual contents. Apparently LaTeX does not like this and omits the content of the span when generating the toc.\nThe span also has the id used by links to the header. Numbered sections start with the section number, which we’d rather produce via pandoc.\nfunction Header (h)\n  -- Unnumbered sections have the main contents as the first element.\n  -- Numbered sections start with the number and an em-dash, so\n  -- the Span is the fifth element (Lua multipass).\n  local span\n  if h.content[1].tag == 'Str' and h.content[1].text:match '[%d%.]+' then\n    span = h.content[5]\n  else\n    span = h.content[1]\n    h.classes:insert('unnumbered')\n  end\n\n  h.identifier = span.identifier\n  h.content = span.content\n\n  return h\nend\nThe filter also removes the section numbering. We add it back by passing --number-sections to pandoc.\n\n\n\nless-bad table of contents\n\n\nNot bad."
+  },
+  {
+    "objectID": "posts/pdf-of-the-lua-manual/index.html#improve-title-and-metadata",
+    "href": "posts/pdf-of-the-lua-manual/index.html#improve-title-and-metadata",
+    "title": "PDF Version of the Lua Manual",
+    "section": "Improve title and metadata",
+    "text": "Improve title and metadata\nThe PDF is already quite usable, let’s prettify it a bit more: It would be important to properly list the authors in the title and metadata, remove the unnecessary first header, and maybe add the Lua logo to the title. All this is easiest when acting on the full document.\nfunction Pandoc (doc)\n  -- comma separated authors\n  local authors = doc.blocks[2]\n  authors.content:remove(1)  -- remove 'by'\n  doc.meta.author = pandoc.List()\n  for author in pandoc.utils.stringify(authors):gmatch '[^,]+' do\n    doc.meta.author:insert(author)\n  end\n\n  -- Remove unnecessary blocks\n  doc.blocks:remove(4) -- menubar\n  doc.blocks:remove(2) -- authors paragraph\n  doc.blocks:remove(1) -- title header\n\n  -- add subtitle image\n  doc.meta.subtitle = pandoc.MetaInlines{\n    pandoc.RawInline('latex', '\\\\vspace{1em}'),\n    pandoc.Image(\"Lua logo\", -- \"https://www.lua.org/images/lua-logo.gif\")\n  }\n  return doc\nend"
+  },
+  {
+    "objectID": "posts/pdf-of-the-lua-manual/index.html#final-touch",
+    "href": "posts/pdf-of-the-lua-manual/index.html#final-touch",
+    "title": "PDF Version of the Lua Manual",
+    "section": "Final touch",
+    "text": "Final touch\nFinally, we may want the PDF to add a little more visible structure, e.g., starting top-level sections on their own page.\nThe command used by pandoc to create the top level headings can be controlled with the --top-level-division option. Setting that option to chapter ensures that each major section starts on a new page. However, the default document class used by LaTeX doesn’t allow chapters, so a different class has to be set with --variable documentclass=report."
+  },
+  {
+    "objectID": "posts/pdf-of-the-lua-manual/index.html#summary",
+    "href": "posts/pdf-of-the-lua-manual/index.html#summary",
+    "title": "PDF Version of the Lua Manual",
+    "section": "Summary",
+    "text": "Summary\nFor completeness, here is the full pandoc command used to generate the PDF:\npandoc \\\n  --toc \\\n  --toc-depth=2 \\\n  --metadata=documentclass=report \\\n  --pdf-engine=xelatex \\\n  --lua-filter=lua-manual-cleanup.lua \\\n  --number-sections \\\n  --top-level-division=chapter \\\n  --output=lua-5.4-manual.pdf \\\n  \"https://lua.org/manual/5.4/manual.html\"\nOne of the big advantages of pandoc is that it offers a lot of freedom. Since we already cleaned the content up, we can now also create other formats, like an ebook, just by changing the name of the output file. The final results are available below:\n\nLua 5.4 manual (PDF)\nLua 5.4 manual (EPUB)"
   },
   {
     "objectID": "about.html",
@@ -12,5 +54,12 @@
     "title": "About",
     "section": "",
     "text": "About this Site\nThe page is build using Quarto. To learn more about Quarto websites visit https://quarto.org/docs/websites."
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "tarleb’s site",
+    "section": "",
+    "text": "PDF Version of the Lua Manual\n\n\n\n\n\n\n\npandoc\n\n\nlua\n\n\npdf\n\n\n\n\nUsing pandoc and some filters to render the Lua manual as PDF.\n\n\n\n\n\n\nJul 11, 2020\n\n\nAlbert Krewinkel\n\n\n\n\n\n\nNo matching items"
   }
 ]

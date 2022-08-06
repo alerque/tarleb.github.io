@@ -1,11 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>tarleb.com/index.html</loc>
-    <lastmod>2022-08-06T10:37:05.782Z</lastmod>
+    <loc>tarleb.com/posts/pdf-of-the-lua-manual/index.html</loc>
+    <lastmod>2022-08-06T12:55:09.489Z</lastmod>
   </url>
   <url>
     <loc>tarleb.com/about.html</loc>
-    <lastmod>2022-08-06T10:37:06.174Z</lastmod>
+    <lastmod>2022-08-06T12:55:10.153Z</lastmod>
+  </url>
+  <url>
+    <loc>tarleb.com/index.html</loc>
+    <lastmod>2022-08-06T12:55:10.501Z</lastmod>
   </url>
 </urlset>
